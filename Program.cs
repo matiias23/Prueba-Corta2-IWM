@@ -18,7 +18,7 @@ chairs.MapGet("/", GetChairs);
 
 chairs.MapGet("/{name}",GetChairById);
 
-//chairs.MapPost("", CreateChairs);
+chairs.MapPost("", CreateChairs);
 
 chairs.MapPut("",UpdateChairs);
 
@@ -43,18 +43,32 @@ static async Task<IResult> GetChairById(DataContext db, int id)
         ? TypedResults.Ok(todo)
         : TypedResults.NotFound();
 }
-/*static async Task<IResult> CreateChairs(DataContext db, Chair chair)
+static async Task<IResult> CreateChairs(DataContext db, Chair chair)
 {
     var chairFound = await db.Chairs.FindAsync(chair.Nombre);
 
     if (chairFound is null){
         return TypedResults.BadRequest("la silla ya existe");
     }
+    var chairItem = new Chair
+    {
+        Nombre = chair.Nombre,
+        Tipo = chair.Tipo,
+        Material = chair.Material,
+        Color = chair.Color,
+        Altura = chair.Altura,
+        Anchura = chair.Anchura,
+        Profundidad = chair.Profundidad,
+        Precio = chair.Precio,
+    
+    };
 
-    db.Chairs.Add(chair);
+    db.Chairs.Add(chairItem);
     await db.SaveChangesAsync();
-    return 
-}*/
+
+    chair = new chair(chairItem);
+    return TypedResults.Created($"/chair/{chair.Id}", chairItem);
+}
 
 static async Task<IResult> UpdateChairs(DataContext db, int id, Chair inputLabel )
 {
@@ -77,9 +91,17 @@ static async Task<IResult> UpdateChairs(DataContext db, int id, Chair inputLabel
     
 }
 
-static IResult IncrementStock(DataContext db)
+static async Task<IResult> IncrementStock(DataContext db, int id, Chair stock)
 {
-    return TypedResults.Ok();
+    var chair = await db.Chairs.FindAsync(id);
+
+    if (chair is null) return TypedResults.NotFound();
+
+    chair.Stock += stock.Stock ;
+
+    await db.SaveChangesAsync();
+
+    return TypedResults.NoContent();
 }
 
 static IResult BuyChairs(DataContext db)

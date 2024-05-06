@@ -66,7 +66,6 @@ static async Task<IResult> CreateChairs(DataContext db, Chair chair)
     db.Chairs.Add(chairItem);
     await db.SaveChangesAsync();
 
-    chair = new chair(chairItem);
     return TypedResults.Created($"/chair/{chair.Id}", chairItem);
 }
 
